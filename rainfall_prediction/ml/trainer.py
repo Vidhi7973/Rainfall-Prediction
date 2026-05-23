@@ -6,12 +6,16 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import accuracy_score
 
-from ml.data_loader import load_dataset, compute_feature_stats, FEATURE_NAMES
-from ml.svm_model import train_svm
-from ml.decision_tree_model import train_decision_tree
-from ml.random_forest_model import train_random_forest
-from ml.metrics import compute_all_metrics
-
+# from ml.data_loader import load_dataset, compute_feature_stats, FEATURE_NAMES
+from rainfall_prediction.ml.data_loader import load_dataset, compute_feature_stats, FEATURE_NAMES
+# from ml.svm_model import train_svm
+# from ml.decision_tree_model import train_decision_tree
+# from ml.random_forest_model import train_random_forest
+# from ml.metrics import compute_all_metrics
+from rainfall_prediction.ml.svm_model import train_svm
+from rainfall_prediction.ml.decision_tree_model import train_decision_tree
+from rainfall_prediction.ml.random_forest_model import train_random_forest
+from rainfall_prediction.ml.metrics import compute_all_metrics
 
 MODELS_SAVE_PATH = os.path.join("models", "trained_models.pkl")
 

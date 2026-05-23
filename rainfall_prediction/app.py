@@ -7,8 +7,11 @@ warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
 
-from ml.trainer import run_training, load_trained_models
-from ml.data_loader import FEATURE_NAMES, FEATURE_LABELS
+# from ml.trainer import run_training, load_trained_models
+# # from rainfall-prediction.ml.trainer import run_training, load_trained_models
+# from ml.data_loader import FEATURE_NAMES, FEATURE_LABELS
+from rainfall_prediction.ml.trainer import run_training, load_trained_models
+from rainfall_prediction.ml.data_loader import FEATURE_NAMES, FEATURE_LABELS
 
 print("Starting up RainSense...")
 

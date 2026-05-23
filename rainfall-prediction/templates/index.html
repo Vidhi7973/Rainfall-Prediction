@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RainSense — Rainfall Prediction Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+
+  <!-- ══════════════ PROJECT BANNER ══════════════ -->
+<div class="project-banner">
+  <div class="project-banner-inner">
+    <div class="project-meta-left">
+      <div class="project-badge">B.Tech Minor Project · 2025–26</div>
+      <div class="project-title">Rainfall Prediction: A Comparative Study of Machine Learning Models</div>
+      <div class="project-sub">8th Semester · CSE Final Year</div>
+    </div>
+    <div class="project-presenter">
+      <div class="presenter-label">Presented by</div>
+      <div class="presenter-name">Vidhi Gupta</div>
+      <div class="presenter-id">2022021167</div>
+      <div class="presenter-dept">B.Tech CSE · Final Year</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ HEADER ══════════════ -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2C9.13 2 5 5.8 5 11c0 3.5 2 6.5 5 8.2V22h8v-2.8c3-1.7 5-4.7 5-8.2 0-5.2-4.13-9-9-9z"
+            fill="url(#rg)" />
+          <path d="M10 24l1.5 2h5l1.5-2H10z" fill="url(#rg)" />
+          <defs>
+            <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#60a5fa" />
+              <stop offset="100%" stop-color="#3b82f6" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>RainSense</span>
+      </div>
+      <div class="header-meta">
+        <span class="tag">ML Comparison Dashboard</span>
+        <span class="tag tag-accent">3 Models · Real Dataset</span>
+        <!-- THEME TOGGLE -->
+        <div class="theme-toggle" id="themeToggle">
+          <button class="theme-btn" data-theme="light" title="Light Mode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5" />
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+            </svg>
+          </button>
+          <button class="theme-btn" data-theme="dark" title="Dark Mode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════ MAIN LAYOUT ══════════════ -->
+  <main class="app-main">
+
+    <!-- LEFT: FORM -->
+    <aside class="form-panel">
+      <div class="panel-label">Today's Weather Conditions</div>
+      <p class="form-hint">Enter current weather readings to predict whether it will rain <strong>tomorrow</strong>. All
+        values are based on the real rainfall dataset.</p>
+      <form id="predictForm" autocomplete="off">
+
+        <div class="input-group-row">
+          <div class="field">
+            <label>Pressure <span class="unit">hPa</span></label>
+            <input type="number" name="pressure" value="1014" step="0.1" min="970" max="1050" />
+            <span class="field-hint">Atmospheric pressure — low values often signal rain</span>
+          </div>
+          <div class="field">
+            <label>Max Temp <span class="unit">°C</span></label>
+            <input type="number" name="maxtemp" value="26" step="0.1" min="0" max="50" />
+            <span class="field-hint">Highest temperature of the day</span>
+          </div>
+        </div>
+
+        <div class="input-group-row">
+          <div class="field">
+            <label>Temperature <span class="unit">°C</span></label>
+            <input type="number" name="temperature" value="24" step="0.1" min="-5" max="45" />
+            <span class="field-hint">Current / average temperature</span>
+          </div>
+          <div class="field">
+            <label>Min Temp <span class="unit">°C</span></label>
+            <input type="number" name="mintemp" value="22" step="0.1" min="-5" max="40" />
+            <span class="field-hint">Lowest temperature of the day</span>
+          </div>
+        </div>
+
+        <div class="input-group-row">
+          <div class="field">
+            <label>Dew Point <span class="unit">°C</span></label>
+            <input type="number" name="dewpoint" value="20" step="0.1" min="-5" max="35" />
+            <span class="field-hint">Higher dew point = more moisture in air</span>
+          </div>
+          <div class="field">
+            <label>Humidity <span class="unit">%</span></label>
+            <input type="number" name="humidity" value="80" min="0" max="100" />
+            <span class="field-hint">Relative humidity (0–100%)</span>
+          </div>
+        </div>
+
+        <div class="input-group-row">
+          <div class="field">
+            <label>Cloud Cover <span class="unit">%</span></label>
+            <input type="number" name="cloud" value="70" min="0" max="100" />
+            <span class="field-hint">Percentage of sky covered by clouds</span>
+          </div>
+          <div class="field">
+            <label>Sunshine <span class="unit">hrs</span></label>
+            <input type="number" name="sunshine" value="4" step="0.1" min="0" max="14" />
+            <span class="field-hint">Hours of bright sunshine today</span>
+          </div>
+        </div>
+
+        <div class="input-group-row">
+          <div class="field">
+            <label>Wind Direction <span class="unit">°</span></label>
+            <input type="number" name="winddirection" value="100" min="0" max="360" />
+            <span class="field-hint">Wind origin in degrees (0=N, 90=E, 180=S, 270=W)</span>
+          </div>
+          <div class="field">
+            <label>Wind Speed <span class="unit">km/h</span></label>
+            <input type="number" name="windspeed" value="21" step="0.1" min="0" max="100" />
+            <span class="field-hint">Average wind speed today</span>
+          </div>
+        </div>
+
+        <input type="hidden" name="rain_today" value="1" />
+
+        <button type="submit" class="predict-btn" id="predictBtn">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="btnText">Predict Tomorrow's Rain</span>
+          <div class="btn-spinner" id="btnSpinner"></div>
+        </button>
+      </form>
+    </aside>
+
+    <!-- RIGHT: RESULTS -->
+    <section class="result-panel" id="resultPanel">
+
+      <!-- DEFAULT STATE -->
+      <div class="idle-state" id="idleState">
+        <div class="idle-animation">
+          <svg class="idle-cloud" viewBox="0 0 120 80" fill="none">
+            <path
+              d="M95 55H25c-11 0-20-9-20-20s9-20 20-20c1.3 0 2.5.1 3.7.4C32 7.4 40.5 2 50.5 2c13.5 0 24 10 24.5 23.3A20 20 0 0 1 95 55z"
+              fill="url(#cg)" opacity="0.5" />
+            <defs>
+              <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#93c5fd" />
+                <stop offset="100%" stop-color="#3b82f6" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="idle-drops"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <p class="idle-text">Enter today's weather conditions<br />and run the prediction</p>
+        <p class="idle-sub">Three ML models will analyse your input and vote on whether it will rain tomorrow.</p>
+      </div>
+
+      <!-- RESULT STATE -->
+      <div class="result-content" id="resultContent" style="display:none">
+
+        <!-- 1. Consensus banner -->
+        <div class="result-section-label">Majority Vote — Final Prediction</div>
+        <p class="result-section-desc">When 2 or more of the 3 models agree, their consensus becomes the final answer.
+          The percentage shown is the average rain probability across all models.</p>
+        <div class="consensus-banner" id="consensusBanner">
+          <div class="consensus-icon" id="consensusIcon"></div>
+          <div class="consensus-text">
+            <div class="consensus-verdict" id="consensusVerdict">—</div>
+            <div class="consensus-sub" id="consensusSub">—</div>
+          </div>
+          <div class="consensus-prob" id="consensusProb">—</div>
+        </div>
+
+        <!-- 2. Gauge arcs row -->
+        <div class="result-section-label mt-20">Individual Model Predictions</div>
+        <p class="result-section-desc">Each semicircular gauge shows the probability of rain according to that model.
+          The arc fills proportionally — a full arc means near-certain rain.</p>
+        <div class="gauge-row">
+          <div class="gauge-card" id="card-svm">
+            <div class="gauge-model-name">SVM</div>
+            <div class="gauge-wrap">
+              <svg class="gauge-svg" viewBox="0 0 140 80">
+                <path class="gauge-track" d="M15 75 A55 55 0 0 1 125 75" fill="none" stroke-width="10"
+                  stroke-linecap="round" />
+                <path class="gauge-fill" id="gauge-fill-svm" d="M15 75 A55 55 0 0 1 125 75" fill="none" stroke-width="10"
+                  stroke-linecap="round" stroke-dasharray="172" stroke-dashoffset="172" />
+              </svg>
+              <div class="gauge-center">
+                <div class="gauge-prob" id="prob-svm">0%</div>
+                <div class="gauge-label">probability</div>
+              </div>
+            </div>
+            <div class="gauge-verdict" id="verdict-svm">—</div>
+            <div class="gauge-model-desc">RBF kernel — finds maximum-margin hyperplane</div>
+          </div>
+          <div class="gauge-card" id="card-dt">
+            <div class="gauge-model-name">Decision Tree</div>
+            <div class="gauge-wrap">
+              <svg class="gauge-svg" viewBox="0 0 140 80">
+                <path class="gauge-track" d="M15 75 A55 55 0 0 1 125 75" fill="none" stroke-width="10"
+                  stroke-linecap="round" />
+                <path class="gauge-fill" id="gauge-fill-dt" d="M15 75 A55 55 0 0 1 125 75" fill="none" stroke-width="10"
+                  stroke-linecap="round" stroke-dasharray="172" stroke-dashoffset="172" />
+              </svg>
+              <div class="gauge-center">
+                <div class="gauge-prob" id="prob-dt">0%</div>
+                <div class="gauge-label">probability</div>
+              </div>
+            </div>
+            <div class="gauge-verdict" id="verdict-dt">—</div>
+            <div class="gauge-model-desc">Rule-based splits — easy to trace decisions</div>
+          </div>
+          <div class="gauge-card" id="card-rf">
+            <div class="gauge-model-name">Random Forest</div>
+            <div class="best-tag">Best Model</div>
+            <div class="gauge-wrap">
+              <svg class="gauge-svg" viewBox="0 0 140 80">
+                <path class="gauge-track" d="M15 75 A55 55 0 0 1 125 75" fill="none" stroke-width="10"
+                  stroke-linecap="round" />
+                <path class="gauge-fill" id="gauge-fill-rf" d="M15 75 A55 55 0 0 1 125 75" fill="none" stroke-width="10"
+                  stroke-linecap="round" stroke-dasharray="172" stroke-dashoffset="172" />
+              </svg>
+              <div class="gauge-center">
+                <div class="gauge-prob" id="prob-rf">0%</div>
+                <div class="gauge-label">probability</div>
+              </div>
+            </div>
+            <div class="gauge-verdict" id="verdict-rf">—</div>
+            <div class="gauge-model-desc">Ensemble of 200 trees — highest accuracy</div>
+          </div>
+        </div>
+
+        <!-- 3. Model reliability panel -->
+        <div class="result-section-label mt-20">Model Reliability — Is this prediction trustworthy?</div>
+        <p class="result-section-desc">Before trusting any prediction, check how reliable each model actually is on the real Rainfall.csv dataset. These numbers come from testing on {{ meta.test_samples }} held-out records the models never saw during training.</p>
+        <div class="reliability-row" id="reliabilityRow"></div>
+
+        <!-- 4. Donut charts + polar area -->
+        <div class="result-section-label mt-20">Probability Breakdown</div>
+        <p class="result-section-desc">The donuts show the rain vs no-rain probability split per model. The polar chart
+          overlays all three models for quick visual comparison.</p>
+        <div class="donut-polar-row">
+          <div class="donut-polar-left">
+            <div class="sub-section-label">Rain vs No-Rain Split</div>
+            <div class="donut-trio">
+              <div class="donut-item" id="dc-svm">
+                <div class="donut-canvas-wrap"><canvas id="donut-svm"></canvas>
+                  <div class="donut-center-val" id="dv-svm">—</div>
+                </div>
+                <div class="donut-item-name" style="color:var(--svm-color)">SVM</div>
+              </div>
+              <div class="donut-item" id="dc-dt">
+                <div class="donut-canvas-wrap"><canvas id="donut-dt"></canvas>
+                  <div class="donut-center-val" id="dv-dt">—</div>
+                </div>
+                <div class="donut-item-name" style="color:var(--dt-color)">Decision Tree</div>
+              </div>
+              <div class="donut-item" id="dc-rf">
+                <div class="donut-canvas-wrap"><canvas id="donut-rf"></canvas>
+                  <div class="donut-center-val" id="dv-rf">—</div>
+                </div>
+                <div class="donut-item-name" style="color:var(--rf-color)">Random Forest</div>
+              </div>
+            </div>
+          </div>
+          <div class="donut-polar-right">
+            <div class="sub-section-label">Polar Probability View</div>
+            <div class="polar-wrap"><canvas id="probPolarChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- 4. Probability bar comparison -->
+        <div class="prob-comparison">
+          <div class="pc-label">Rain Probability Comparison — All Models</div>
+          <div class="pc-bars" id="probBars"></div>
+        </div>
+
+        <!-- 5. Certainty meter -->
+        <div class="certainty-card">
+          <div class="cert-top">
+            <div>
+              <div class="cert-title">Prediction Certainty</div>
+              <div class="cert-sub-text">Certainty measures how far the average probability is from 50% (coin-flip). 0%
+                = maximum uncertainty; 100% = all models fully confident.</div>
+              <div class="cert-desc" id="certDesc">—</div>
+            </div>
+            <div class="cert-pct-big" id="certPct">—</div>
+          </div>
+          <div class="cert-track-wrap">
+            <div class="cert-track">
+              <div class="cert-fill" id="certFill" style="width:0%"></div>
+              <div class="cert-marker" id="certMarker" style="left:0%"></div>
+            </div>
+            <div class="cert-ends"><span>Uncertain (50%)</span><span>Fully Confident</span></div>
+          </div>
+          <!-- Vote dots -->
+          <div class="vote-row">
+            <div class="vote-dot-wrap" id="vote-svm">
+              <div class="vote-dot"></div><span>SVM</span>
+            </div>
+            <div class="vote-dot-wrap" id="vote-dt">
+              <div class="vote-dot"></div><span>Decision Tree</span>
+            </div>
+            <div class="vote-dot-wrap" id="vote-rf">
+              <div class="vote-dot"></div><span>Random Forest</span>
+            </div>
+          </div>
+          <p class="cert-note">Blue dot = predicts Rain &nbsp;·&nbsp; Green dot = predicts No Rain</p>
+        </div>
+
+      </div><!-- /result-content -->
+    </section>
+
+  </main>
+
+  <!-- ══════════════ PERFORMANCE SECTION ══════════════ -->
+  <section class="perf-section">
+
+    <div class="perf-header">
+      <div>
+        <span class="perf-title">Model Performance Comparison</span>
+        <p class="section-desc">These metrics were computed on a <strong>held-out test set of {{ meta.test_samples }} records</strong> ({{ meta.rain_count }} rain days, {{ meta.no_rain_count }} dry days across {{ meta.total_samples }} total days in Rainfall.csv). The models were trained on {{ meta.train_samples }} records and tested on the remaining {{ meta.test_samples }}.</p>
+      </div>
+      <span class="perf-sub">{{ meta.test_samples }} test samples · {{ meta.total_samples }} total records</span>
+    </div>
+
+    <!-- KPI strip -->
+    <div class="kpi-strip">
+      <div class="kpi-card" data-model="svm">
+        <div class="kpi-label">SVM</div>
+        <p class="kpi-desc">Support Vector Machine with an RBF (Radial Basis Function) kernel. Finds the maximum-margin
+          hyperplane that separates rain from no-rain days in feature space.</p>
+        <div class="kpi-metrics">
+          <div class="kpi-m"><span class="kv">{{ metrics['SVM']['accuracy'] }}%</span><span
+              class="kl">Accuracy</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['SVM']['precision'] }}%</span><span
+              class="kl">Precision</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['SVM']['recall'] }}%</span><span
+              class="kl">Recall</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['SVM']['f1_score'] }}%</span><span
+              class="kl">F1-Score</span></div>
+        </div>
+        <div class="kpi-bar">
+          <div class="kpi-fill" style="width:{{ metrics['SVM']['accuracy'] }}%"></div>
+        </div>
+      </div>
+      <div class="kpi-card" data-model="dt">
+        <div class="kpi-label">Decision Tree</div>
+        <p class="kpi-desc">Learns a hierarchy of if-then rules. Intuitive and fast, but prone to overfitting.
+          Calibrated probabilities used here for smoother outputs.</p>
+        <div class="kpi-metrics">
+          <div class="kpi-m"><span class="kv">{{ metrics['Decision Tree']['accuracy'] }}%</span><span
+              class="kl">Accuracy</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['Decision Tree']['precision'] }}%</span><span
+              class="kl">Precision</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['Decision Tree']['recall'] }}%</span><span
+              class="kl">Recall</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['Decision Tree']['f1_score'] }}%</span><span
+              class="kl">F1-Score</span></div>
+        </div>
+        <div class="kpi-bar">
+          <div class="kpi-fill" style="width:{{ metrics['Decision Tree']['accuracy'] }}%"></div>
+        </div>
+      </div>
+      <div class="kpi-card kpi-best" data-model="rf">
+        <div class="kpi-label">Random Forest <span class="best-chip">Best</span></div>
+        <p class="kpi-desc">An ensemble of 200 decision trees trained on random data subsets. Reduces overfitting
+          through averaging, typically achieving the highest accuracy.</p>
+        <div class="kpi-metrics">
+          <div class="kpi-m"><span class="kv">{{ metrics['Random Forest']['accuracy'] }}%</span><span
+              class="kl">Accuracy</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['Random Forest']['precision'] }}%</span><span
+              class="kl">Precision</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['Random Forest']['recall'] }}%</span><span
+              class="kl">Recall</span></div>
+          <div class="kpi-m"><span class="kv">{{ metrics['Random Forest']['f1_score'] }}%</span><span
+              class="kl">F1-Score</span></div>
+        </div>
+        <div class="kpi-bar">
+          <div class="kpi-fill" style="width:{{ metrics['Random Forest']['accuracy'] }}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 1: grouped bar + bubble -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">All Metrics Comparison</div>
+        <p class="chart-desc">Grouped bars compare Accuracy, Precision, Recall, and F1-Score across all three models.
+          Higher is better for all four metrics.</p>
+        <div class="chart-wrap"><canvas id="groupedChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Accuracy vs F1-Score (Bubble)</div>
+        <p class="chart-desc">Each bubble represents one model. Position shows Accuracy (x) vs F1-Score (y). The ideal
+          model sits in the top-right corner.</p>
+        <div class="chart-wrap"><canvas id="scatterChart"></canvas></div>
+      </div>
+      <div class="chart-card chart-card-wide">
+        <div class="chart-card-title">Radar — Metric Profile</div>
+        <p class="chart-desc">A spider-chart overlaying all metrics at once. A larger covered area means a more
+          well-rounded model performance across all dimensions.</p>
+        <div class="chart-wrap chart-wrap-short"><canvas id="radarChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Row 2: Feature Importance + Accuracy Rings -->
+    <div class="charts-grid mt-16">
+      <div class="chart-card">
+        <div class="chart-card-title">Feature Importance — Random Forest</div>
+        <p class="chart-desc">How much each input feature contributed to the Random Forest's predictions. Longer bar =
+          the model relies on that feature more.</p>
+        <div class="chart-wrap chart-wrap-feature"><canvas id="featureChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Model Accuracy Rings</div>
+        <p class="chart-desc">Ring charts showing the accuracy percentage of each model. The filled arc represents
+          correctly predicted samples out of 100.</p>
+        <div class="acc-rings-wrap">
+          <div class="acc-ring-item">
+            <div class="acc-ring-canvas-wrap">
+              <canvas id="accRing-svm"></canvas>
+              <div class="acc-ring-val" style="color:var(--svm-color)">{{ metrics['SVM']['accuracy'] }}%
+              </div>
+            </div>
+            <div class="acc-ring-name" style="color:var(--svm-color)">SVM</div>
+          </div>
+          <div class="acc-ring-item">
+            <div class="acc-ring-canvas-wrap">
+              <canvas id="accRing-dt"></canvas>
+              <div class="acc-ring-val" style="color:var(--dt-color)">{{ metrics['Decision Tree']['accuracy'] }}%</div>
+            </div>
+            <div class="acc-ring-name" style="color:var(--dt-color)">Decision Tree</div>
+          </div>
+          <div class="acc-ring-item">
+            <div class="acc-ring-canvas-wrap">
+              <canvas id="accRing-rf"></canvas>
+              <div class="acc-ring-val" style="color:var(--rf-color)">{{ metrics['Random Forest']['accuracy'] }}%</div>
+            </div>
+            <div class="acc-ring-name" style="color:var(--rf-color)">Random Forest</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Per-metric mini charts -->
+    <div class="metric-mini-grid mt-16">
+      <div class="chart-card">
+        <div class="chart-card-title">Accuracy</div>
+        <p class="chart-desc">% of all predictions that were correct (both rain and no-rain).</p>
+        <div class="chart-wrap-mini"><canvas id="metAccChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Precision</div>
+        <p class="chart-desc">Of all "Rain" predictions, what % were actually correct? High precision = few false
+          alarms.</p>
+        <div class="chart-wrap-mini"><canvas id="metPrecChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Recall</div>
+        <p class="chart-desc">Of all actual rain days, what % did the model catch? High recall = misses fewer rainy
+          days.</p>
+        <div class="chart-wrap-mini"><canvas id="metRecChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">F1-Score</div>
+        <p class="chart-desc">Harmonic mean of Precision and Recall. Best single metric when both false alarms and
+          misses matter.</p>
+        <div class="chart-wrap-mini"><canvas id="metF1Chart"></canvas></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════════════ DIAGNOSTICS ══════════════ -->
+  <section class="diag-section">
+
+    <div class="perf-header">
+      <div>
+        <span class="perf-title">Model Diagnostics &amp; Data Verification</span>
+        <p class="section-desc">This section answers two critical questions: <strong>(1) Are the models genuinely
+            learning from data, or predicting randomly?</strong> And <strong>(2) Is the dataset itself behaving as
+            meteorological science expects?</strong> All numbers are derived from the real Rainfall.csv dataset.</p>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="diagLoading" class="diag-loading">
+      <div class="diag-spinner"></div>
+      <span>Running diagnostics…</span>
+    </div>
+
+    <!-- Results -->
+    <div id="diagResults" style="display:none">
+
+      <!-- Verdict banner -->
+      <div class="verdict-banner" id="verdictBanner">
+        <div class="verdict-icon-wrap" id="verdictIconWrap"></div>
+        <div class="verdict-body">
+          <div class="verdict-title" id="verdictTitle">—</div>
+          <div class="verdict-detail" id="verdictDetail">—</div>
+        </div>
+        <div class="verdict-stats" id="verdictStats"></div>
+      </div>
+
+      <!-- Row 1: class balance · baseline compare · AUC bars -->
+      <div class="diag-row-3 mt-16">
+
+        <div class="chart-card">
+          <div class="chart-card-title">Dataset Class Balance</div>
+          <p class="chart-desc">Shows the ratio of rainy to non-rainy days in the training data. A heavily skewed
+            dataset can bias models to predict only the majority class.</p>
+          <div class="chart-wrap-mini" style="position:relative"><canvas id="classBalChart"></canvas></div>
+          <div class="diag-note" id="balNote">—</div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-title">Accuracy vs Baseline (Majority-Class Guesser)</div>
+          <p class="chart-desc">A "dumb" baseline that always predicts the most common class. If our ML models don't
+            significantly beat this, they aren't adding value.</p>
+          <div class="chart-wrap-mini" style="position:relative"><canvas id="baselineChart"></canvas></div>
+          <div class="diag-note" id="baselineNote">—</div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-title">ROC-AUC Score per Model
+            <span class="auc-legend">0.5 = random · 1.0 = perfect</span>
+          </div>
+          <p class="chart-desc">AUC (Area Under the ROC Curve) measures how well a model separates rain from no-rain
+            days. Above 0.7 is good; above 0.9 is excellent.</p>
+          <div class="auc-bars-wrap" id="aucBarsWrap"></div>
+        </div>
+
+      </div>
+
+      <!-- Row 2: ROC curves -->
+      <div class="chart-card mt-16">
+        <div class="chart-card-title">ROC Curves — True Positive Rate vs False Positive Rate
+          <span class="auc-legend">Diagonal = random classifier</span>
+        </div>
+        <p class="chart-desc">Each curve shows the trade-off between catching real rain (TPR) and raising false alarms
+          (FPR) as the decision threshold varies. Curves bowing toward the top-left corner indicate better performance.
+          The dashed diagonal represents a random-guess classifier.</p>
+        <div class="chart-wrap"><canvas id="rocChart"></canvas></div>
+      </div>
+
+      <!-- Row 3: Confusion matrices -->
+      <div class="mt-16">
+        <div class="diag-sub-header">Confusion Matrices — What each model actually predicted</div>
+        <p class="chart-desc" style="margin-bottom:12px">A confusion matrix breaks down predictions into four
+          categories: <span style="color:#34d399">True Negatives</span> (correctly predicted No Rain), <span
+            style="color:#93c5fd">True Positives</span> (correctly predicted Rain), <span style="color:#fbbf24">False
+            Positives</span> (predicted Rain when it didn't rain — false alarm), and <span style="color:#f87171">False
+            Negatives</span> (missed rain days — the most costly error in forecasting).</p>
+        <div class="cm-row" id="cmRow"></div>
+      </div>
+
+      <!-- Row 4: Cross-validation -->
+      <div class="chart-card mt-16">
+        <div class="chart-card-title">
+          5-Fold Cross-Validation AUC — Checks for Overfitting
+          <span class="auc-legend">High mean + low std = stable generalisation</span>
+        </div>
+        <p class="chart-desc">The dataset is split into 5 equal folds. Each model trains on 4 folds and is tested on the
+          5th, rotating until every fold is tested. A high mean AUC with low standard deviation confirms the model
+          generalises well to unseen data and isn't just memorising the training set.</p>
+        <div class="chart-wrap-mini" style="position:relative"><canvas id="cvChart"></canvas></div>
+      </div>
+
+      <!-- Row 5: Sensitivity / Specificity -->
+      <div class="chart-card mt-16">
+        <div class="chart-card-title">
+          Sensitivity vs Specificity
+          <span class="auc-legend">Sensitivity = catches real rain · Specificity = avoids false alarms</span>
+        </div>
+        <p class="chart-desc"><strong>Sensitivity (Recall)</strong> — the proportion of actual rainy days the model
+          correctly identified. Critical for weather forecasting where missing rain is costly.
+          <strong>Specificity</strong> — the proportion of dry days correctly identified as dry. High specificity means
+          the model avoids unnecessary false rain alerts.</p>
+        <div class="chart-wrap-mini" style="position:relative"><canvas id="sensSpecChart"></canvas></div>
+      </div>
+
+      <!-- Row 7: PR Curves + Calibration -->
+      <div class="diag-row-2 mt-16">
+        <div class="chart-card">
+          <div class="chart-card-title">Precision-Recall Curves
+            <span class="auc-legend">Higher area = better · Dashed = random baseline</span>
+          </div>
+          <p class="chart-desc">Unlike ROC curves, PR curves focus specifically on the positive (Rain) class. Useful
+            when the dataset is imbalanced. The area under this curve (AUPRC) rewards models that stay precise while
+            also catching most rain days.</p>
+          <div class="chart-wrap"><canvas id="prChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Calibration Curves — Predicted vs Actual Probability
+            <span class="auc-legend">Closer to diagonal = better calibrated</span>
+          </div>
+          <p class="chart-desc">Checks whether the model's stated probabilities are trustworthy. If a model says "70%
+            chance of rain", it should actually rain about 70% of the time. Points on the diagonal = perfectly
+            calibrated. Points above the diagonal = model is underconfident; below = overconfident.</p>
+          <div class="chart-wrap"><canvas id="calChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Row 8: Feature-Target Correlations -->
+      <div class="chart-card mt-16">
+        <div class="chart-card-title">Feature → Rain Tomorrow Correlations
+          <span class="auc-legend">Point-biserial correlation · * = statistically significant (p &lt; 0.05)</span>
+        </div>
+        <p class="chart-desc">Measures how strongly each weather feature is linearly associated with rain tomorrow. Blue
+          bars = positive correlation (feature increases → more rain likely). Orange bars = negative correlation
+          (feature increases → less rain likely). Features marked with * are statistically significant — their
+          correlation is unlikely to be due to chance.</p>
+        <div class="chart-wrap chart-wrap-feature"><canvas id="featCorrChart"></canvas></div>
+      </div>
+
+      <!-- Row 9: Data Verification -->
+      <div class="chart-card mt-16">
+        <div class="chart-card-title">Data Verification — Feature Distributions &amp; Correlation Direction
+          <span class="auc-legend">Checks that each feature correlates with rain in the expected meteorological
+            direction</span>
+        </div>
+        <p class="chart-desc">Each card shows a feature's correlation with rain tomorrow and whether it aligns with what
+          meteorology predicts. <span style="color:#34d399">Green</span> = correlation direction is as expected (e.g.
+          high humidity → more rain ✓). <span style="color:#fbbf24">Amber</span> = correlation is too small to be
+          statistically significant. <span style="color:#f87171">Red</span> = direction is opposite to expectation —
+          possible data anomaly worth investigating.</p>
+        <div id="dataVerifyPanel"></div>
+      </div>
+
+    </div><!-- /diagResults -->
+  </section>
+
+  <script type="application/json" id="app-data">
+  { "metrics": {{ metrics | tojson }}, "meta": {{ meta | tojson }} }
+</script>
+<script>
+  var _d = JSON.parse(document.getElementById("app-data").textContent);
+  window.METRICS = _d.metrics;
+  window.META    = _d.meta;
+</script>
+  <script src="/static/js/app.js"></script>
+</body>
+
+</html>

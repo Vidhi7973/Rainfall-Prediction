@@ -20,7 +20,7 @@ from rainfall_prediction.ml.metrics import compute_all_metrics
 MODELS_SAVE_PATH = os.path.join("models", "trained_models.pkl")
 
 
-def run_training(csv_path="Rainfall.csv"):
+def run_training(csv_path="rainfall_prediction/Rainfall.csv"):
     print("Loading dataset from", csv_path, "...")
     X, y, df = load_dataset(csv_path)
     print(f"  {len(X)} samples loaded | {FEATURE_NAMES.__len__()} features | "

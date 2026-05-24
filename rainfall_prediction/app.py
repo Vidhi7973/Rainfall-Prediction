@@ -24,7 +24,7 @@ if saved is not None:
     DIAGNOSTICS = saved["diagnostics"]
 else:
     print("No saved models found. Training from scratch...")
-    MODELS, SCALER, METRICS, DIAGNOSTICS = run_training(csv_path="Rainfall.csv")
+    MODELS, SCALER, METRICS, DIAGNOSTICS = run_training(csv_path="rainfall_prediction/Rainfall.csv")
 
 @app.route("/")
 def index():
